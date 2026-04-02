@@ -9,9 +9,11 @@ class NumberLock:
         #creates an empty space for each digit of the answer
     def enter_code(self):
         finish = False
+        #Begins the loop
         while finish == False:
             print(f'Current code: {self.cur_code}')
             sub_or_not = input('Submit code? Y/N')
+            #Asks if user wants to submit the printed code and checks if its correct
             if sub_or_not == 'Y':
                 if self.cur_code == self.answer:
                     print("Correct!")
@@ -19,6 +21,7 @@ class NumberLock:
                 else:
                     print("Incorrect")
             elif sub_or_not == 'N':
+                #for entering the code, asks for digit to change and which number to change it to, also checks if the numbers are within the proper range
                 digit = int(input(f'Select digit 1-{len(self.cur_code)}'))
                 if digit > 0 and digit <= len(self.cur_code):
                     input_num = int(input(f'Select digit 0-9'))
