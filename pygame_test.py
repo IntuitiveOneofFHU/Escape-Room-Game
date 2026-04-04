@@ -20,7 +20,7 @@ test_unlocked = False #makes the door start locked
 
 lock_code = [0,0,0,0] #lock code that is changed
 
-lock_answer = [6,8,1,3] #lock code to match
+lock_answer = [9,5,3,6] #lock code to match
 
 show_lock = False
 
@@ -41,10 +41,13 @@ while running:
         #detects if mouse is hovering over lock when clicking, then shows lock, if it clicks the lock while displaying it, it hides the lock
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and is_between(event.pos, test_lock_topleft, test_lock_bottomright) == True:
-                if show_lock == False:
+                '''if show_lock == False:
                     show_lock = True
                 else:
-                    show_lock = False
+                    show_lock = False'''
+                if is_between(event.pos, test_lock_topleft, test_lock_bottomright):
+                    show_lock = not show_lock
+
     
     screen.fill("black") #wipes previous screen
 
@@ -62,7 +65,28 @@ while running:
     #creating the bounds around where the lock can be clicked
     test_lock_topleft = (460, 255)
     test_lock_bottomright = (500, 330)
-    
+
+    first_digit_topleft = (116,292)
+    first_digit_bottomleft = (172,369)
+    second_digit_topleft = (202,291)
+    second_digit_bottomleft = (258,368)
+    third_digit_topleft = (280,290)
+    third_digit_bottomleft = (336,367)
+    fourth_digit_bottomleft = (417,366)
+    fourth_digit_topleft = (361,289)
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.button == 1:
+            if is_between(event.pos, first_digit_topleft, first_digit_bottomleft):
+                lock_code[0] = (lock_code[0] + 1) % 10
+            elif is_between(event.pos, second_digit_topleft, second_digit_bottomleft):
+                lock_code[1] = (lock_code[1] + 1) % 10
+            elif is_between(event.pos, third_digit_topleft, third_digit_bottomleft):
+                lock_code[2] = (lock_code[2] + 1) % 10
+            elif is_between(event.pos, fourth_digit_topleft, fourth_digit_bottomleft):
+                lock_code[3] = (lock_code[3] + 1) % 10
+    if lock_code == lock_answer:
+        test_unlocked = True
+
     #gets mouse position
     mouse_position = pygame.mouse.get_pos()
 
