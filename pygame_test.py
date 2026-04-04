@@ -4,6 +4,7 @@
 
 
 import pygame
+import NumLock_object
 
 pygame.init()
 screen = pygame.display.set_mode((500, 500))
@@ -12,15 +13,12 @@ running = True
 
 testroom_locked = pygame.image.load('images/testroom_locked.png').convert()
 testroom_unlocked = pygame.image.load('images/testroom_unlocked.png').convert()
-testlock = pygame.image.load('images/testlock.png').convert_alpha()
 
 font = pygame.font.SysFont("Arial", 48)
 
 test_unlocked = False #makes the door start locked
 
-lock_code = [0,0,0,0] #lock code that is changed
-
-lock_answer = [6,8,1,3] #lock code to match
+testlock = NumLock_object.NumberLock([6,8,1,3], 'images/testlock.png', (460,255),(500,330))
 
 show_lock = False
 
@@ -40,7 +38,7 @@ while running:
 
         #detects if mouse is hovering over lock when clicking, then shows lock, if it clicks the lock while displaying it, it hides the lock
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and is_between(event.pos, test_lock_topleft, test_lock_bottomright) == True:
+            if event.button == 1 and is_between(event.pos, testlock.top_left, testlock.bottom_right) == True:
                 if show_lock == False:
                     show_lock = True
                 else:
@@ -54,15 +52,12 @@ while running:
     else:
         screen.blit(testroom_locked, (0,0))
 
-    first_digit = font.render(str(lock_code[0]), True, (0, 0, 0))
-    second_digit = font.render(str(lock_code[1]), True, (0, 0, 0))
-    third_digit = font.render(str(lock_code[2]), True, (0, 0, 0))
-    fourth_digit = font.render(str(lock_code[3]), True, (0, 0, 0))
+    first_digit = font.render(str(testlock.cur_code[0]), True, (0, 0, 0))
+    second_digit = font.render(str(testlock.cur_code[1]), True, (0, 0, 0))
+    third_digit = font.render(str(testlock.cur_code[2]), True, (0, 0, 0))
+    fourth_digit = font.render(str(testlock.cur_code[3]), True, (0, 0, 0))
 
-    #creating the bounds around where the lock can be clicked
-    test_lock_topleft = (460, 255)
-    test_lock_bottomright = (500, 330)
-    
+
     #gets mouse position
     mouse_position = pygame.mouse.get_pos()
 
@@ -72,7 +67,7 @@ while running:
     #---Comment Out When Unneeded---
 
     if show_lock == True:
-        screen.blit(testlock, (0,0))
+        screen.blit(testlock.load_image(), (0,0))
         screen.blit(first_digit, (130, 300))
         screen.blit(second_digit, (220, 300))
         screen.blit(third_digit, (300, 300))
