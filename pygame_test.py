@@ -18,14 +18,14 @@ font = pygame.font.SysFont("Arial", 48)
 
 test_unlocked = False #makes the door start locked
 
-testlock = NumLock_object.NumberLock([6,8,1,3], 'images/testlock.png', (460,255),(500,330))
+testlock = NumLock_object.NumberLock([9,5,3,6], 'images/testlock.png', (460,255),(500,330))
 
 show_lock = False
 
 #function to check if something is within a box (Like a mouse click)
 #takes in tuples for every input (coordinate pairs)
-def is_between(point, top_left, bottom_right):
-    if (top_left[0] <= point[0] <= bottom_right[0]) and (top_left[1] <= point[1] <= bottom_right[1]):
+def mouse_between(top_left, bottom_right):
+    if (top_left[0] <= event.pos[0] <= bottom_right[0]) and (top_left[1] <= event.pos[1] <= bottom_right[1]):
         return True
     else:
         return False
@@ -38,12 +38,16 @@ while running:
 
         #detects if mouse is hovering over lock when clicking, then shows lock, if it clicks the lock while displaying it, it hides the lock
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and is_between(event.pos, testlock.top_left, testlock.bottom_right) == True:
-                '''if show_lock == False:
-                    show_lock = True
-                else:
-                    show_lock = False'''
-                if is_between(event.pos, test_lock_topleft, test_lock_bottomright):
+            if event.button == 1:
+                if mouse_between(first_digit_topleft, first_digit_bottomleft):
+                    testlock.cur_code[0] = (testlock.cur_code[0] + 1) % 10
+                elif mouse_between(second_digit_topleft, second_digit_bottomleft):
+                    testlock.cur_code[1] = (testlock.cur_code[1] + 1) % 10
+                elif mouse_between(third_digit_topleft, third_digit_bottomleft):
+                    testlock.cur_code[2] = (testlock.cur_code[2] + 1) % 10
+                elif mouse_between(fourth_digit_topleft, fourth_digit_bottomleft):
+                    testlock.cur_code[3] = (testlock.cur_code[3] + 1) % 10
+                elif mouse_between(testlock.top_left, testlock.bottom_right):
                     show_lock = not show_lock
 
     
@@ -61,10 +65,6 @@ while running:
     fourth_digit = font.render(str(testlock.cur_code[3]), True, (0, 0, 0))
 
 
-    #creating the bounds around where the lock can be clicked
-    test_lock_topleft = (460, 255)
-    test_lock_bottomright = (500, 330)
-
     first_digit_topleft = (116,292)
     first_digit_bottomleft = (172,369)
     second_digit_topleft = (202,291)
@@ -73,18 +73,10 @@ while running:
     third_digit_bottomleft = (336,367)
     fourth_digit_bottomleft = (417,366)
     fourth_digit_topleft = (361,289)
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        if event.button == 1:
-            if is_between(event.pos, first_digit_topleft, first_digit_bottomleft):
-                lock_code[0] = (lock_code[0] + 1) % 10
-            elif is_between(event.pos, second_digit_topleft, second_digit_bottomleft):
-                lock_code[1] = (lock_code[1] + 1) % 10
-            elif is_between(event.pos, third_digit_topleft, third_digit_bottomleft):
-                lock_code[2] = (lock_code[2] + 1) % 10
-            elif is_between(event.pos, fourth_digit_topleft, fourth_digit_bottomleft):
-                lock_code[3] = (lock_code[3] + 1) % 10
-    if lock_code == lock_answer:
+    
+    if testlock.cur_code == testlock.answer:
         test_unlocked = True
+        show_lock = False
 
     #gets mouse position
     mouse_position = pygame.mouse.get_pos()
