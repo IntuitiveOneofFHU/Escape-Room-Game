@@ -20,7 +20,7 @@ test_unlocked = False #makes the door start locked
 
 lock_code = [0,0,0,0] #lock code that is changed
 
-lock_answer = [9,5,3,6] #lock code to match
+ #lock code to match
 
 show_lock = False
 
@@ -193,4 +193,4 @@ while running:
 
     clock.tick(60) #sets FPS to 60
 
-pygame.quit()
+pygame.quit() 

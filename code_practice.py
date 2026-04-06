@@ -34,5 +34,5 @@ class NumberLock:
             else:
                 print('Invalid Input')
 
-test_lock = NumberLock([9, 3, 5, 2])
+test_lock = NumberLock([9, 5, 3, 6])
 test_lock.enter_code()
