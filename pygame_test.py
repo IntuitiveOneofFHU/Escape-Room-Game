@@ -4,7 +4,7 @@
 
 
 import pygame
-import NumLock_object
+import Classes_and_functions
 
 pygame.init()
 screen = pygame.display.set_mode((500, 500))
@@ -18,9 +18,11 @@ font = pygame.font.SysFont("Arial", 48)
 
 test_unlocked = False #makes the door start locked
 
-testlock = NumLock_object.NumberLock([9,5,3,6], 'images/testlock.png', (460,255),(500,330))
-
-show_lock = False
+testlock = Classes_and_functions.NumberLock('images/testlock.png', (460,255),(500,330))
+testlock.add_digit(9, (130, 300), (116,292), (172,369))
+testlock.add_digit(5, (220, 300), (202,291), (258,368))
+testlock.add_digit(3, (300, 300), (280,290), (336,367))
+testlock.add_digit(6, (380, 300), (361,289), (417,366))
 
 #function to check if something is within a box (Like a mouse click)
 #takes in tuples for every input (coordinate pairs)
@@ -39,17 +41,16 @@ while running:
         #detects if mouse is hovering over lock when clicking, then shows lock, if it clicks the lock while displaying it, it hides the lock
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if mouse_between(first_digit_topleft, first_digit_bottomleft):
-                    testlock.cur_code[0] = (testlock.cur_code[0] + 1) % 10
-                elif mouse_between(second_digit_topleft, second_digit_bottomleft):
-                    testlock.cur_code[1] = (testlock.cur_code[1] + 1) % 10
-                elif mouse_between(third_digit_topleft, third_digit_bottomleft):
-                    testlock.cur_code[2] = (testlock.cur_code[2] + 1) % 10
-                elif mouse_between(fourth_digit_topleft, fourth_digit_bottomleft):
-                    testlock.cur_code[3] = (testlock.cur_code[3] + 1) % 10
-                elif mouse_between(testlock.top_left, testlock.bottom_right):
-                    show_lock = not show_lock
+                if testlock.show_lock == True:
+                    for digit in testlock.digits:
+                        if mouse_between(digit.top_left, digit.bottom_right):
+                            digit.increment_code()
+                if mouse_between(testlock.top_left, testlock.bottom_right):
+                    testlock.show_lock = not testlock.show_lock
 
+    if testlock.check_code():
+        test_unlocked = True
+        testlock.show_lock = False
     
     screen.fill("black") #wipes previous screen
 
@@ -59,24 +60,8 @@ while running:
     else:
         screen.blit(testroom_locked, (0,0))
 
-    first_digit = font.render(str(testlock.cur_code[0]), True, (0, 0, 0))
-    second_digit = font.render(str(testlock.cur_code[1]), True, (0, 0, 0))
-    third_digit = font.render(str(testlock.cur_code[2]), True, (0, 0, 0))
-    fourth_digit = font.render(str(testlock.cur_code[3]), True, (0, 0, 0))
-
-
-    first_digit_topleft = (116,292)
-    first_digit_bottomleft = (172,369)
-    second_digit_topleft = (202,291)
-    second_digit_bottomleft = (258,368)
-    third_digit_topleft = (280,290)
-    third_digit_bottomleft = (336,367)
-    fourth_digit_bottomleft = (417,366)
-    fourth_digit_topleft = (361,289)
-    
-    if testlock.cur_code == testlock.answer:
-        test_unlocked = True
-        show_lock = False
+    if testlock.show_lock == True:
+        testlock.render_lock()
 
     #gets mouse position
     mouse_position = pygame.mouse.get_pos()
@@ -86,12 +71,7 @@ while running:
     screen.blit(MOUSE_POS_DEBUG, (0,0))
     #---Comment Out When Unneeded---
 
-    if show_lock == True:
-        screen.blit(testlock.load_image(), (0,0))
-        screen.blit(first_digit, (130, 300))
-        screen.blit(second_digit, (220, 300))
-        screen.blit(third_digit, (300, 300))
-        screen.blit(fourth_digit, (380, 300))
+
 
 
     pygame.display.flip() #shows screen
