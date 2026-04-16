@@ -1,6 +1,6 @@
 import pygame
 pygame.init()
-screen = pygame.display.set_mode((500, 500))
+screen = pygame.display.set_mode((500, 600))
 font = pygame.font.SysFont("Arial", 48)
 #Classes and functions will be made here and imported into the pygame file to reduce clutter
 
@@ -41,17 +41,37 @@ class NumberLock:
                 break
         return correct
 
+class Item:
+    def __init__(self, image, name):
+        self.image = image
+        self.name = name
+
+class Inventory:
+    def __init__(self):
+        self.items = []
+    def add_item(self, item):
+        self.items.append(item)
+    def render_items(self):
+        for index, item in enumerate(self.items):
+            screen.blit(pygame.image.load(item.image).convert_alpha(), (25+index*75,525))
+
+class ClickableItem:
+    def __init__(self, item, top_left, bottom_right, visible=True):
+        self.item = item
+        self.visible = visible
+        self.top_left = top_left
+        self.bottom_right = bottom_right
+    def click(self, inventory):
+        if self.visible == True:
+            inventory.items.append(self.item)
+            self.visible = False
 
 class ClickableObject:
-    def __init__(self, name, description, usable):
+    def __init__(self, name, description, top_left, bottom_right):
         self.name = name
         self.description = description
-        self.usable = True if usable else False
+        self.top_left = top_left
+        self.bottom_right = bottom_right
 
-
-    def click(self, inventory):
-        if self.usable:
-            print(f'You picked up the {self.name} and added it to your inventory.')
-            inventory.append(self)
-        else:
-            print(f'You clicked on {self.name}. {self.description}')
+    def click(self):
+        print(f'You clicked on {self.name}. {self.description}')

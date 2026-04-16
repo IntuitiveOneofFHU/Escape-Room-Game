@@ -7,7 +7,7 @@ import pygame
 import Classes_and_functions
 
 pygame.init()
-screen = pygame.display.set_mode((500, 500))
+screen = pygame.display.set_mode((500, 600))
 clock = pygame.time.Clock()
 running = True
 
@@ -18,6 +18,13 @@ font = pygame.font.SysFont("Arial", 48)
 
 test_unlocked = False #makes the door start locked
 
+key = Classes_and_functions.Item('images/key.png','key')
+screwdriver = Classes_and_functions.Item('images/screwdriver.png','screwdriver')
+
+inventory = Classes_and_functions.Inventory()
+inventory.add_item(screwdriver)
+inventory.add_item(key)
+
 testlock = Classes_and_functions.NumberLock('images/testlock.png', (460,255),(500,330))
 testlock.add_digit(9, (130, 300), (116,292), (172,369))
 testlock.add_digit(5, (220, 300), (202,291), (258,368))
@@ -27,10 +34,7 @@ testlock.add_digit(6, (380, 300), (361,289), (417,366))
 #function to check if something is within a box (Like a mouse click)
 #takes in tuples for every input (coordinate pairs)
 def mouse_between(top_left, bottom_right):
-    if (top_left[0] <= event.pos[0] <= bottom_right[0]) and (top_left[1] <= event.pos[1] <= bottom_right[1]):
-        return True
-    else:
-        return False
+    return (top_left[0] <= event.pos[0] <= bottom_right[0]) and (top_left[1] <= event.pos[1] <= bottom_right[1])
 
 while running:
     
@@ -55,6 +59,9 @@ while running:
     screen.fill("black") #wipes previous screen
 
     #render game here
+    screen.blit(pygame.image.load("images/inventory.png").convert(), (0,500))
+    inventory.render_items()
+
     if test_unlocked == True:
         screen.blit(testroom_unlocked, (0,0))
     else:
