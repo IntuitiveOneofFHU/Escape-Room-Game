@@ -7,7 +7,7 @@ import pygame
 import Classes_and_functions
 
 pygame.init()
-screen = pygame.display.set_mode((500, 600))
+screen = pygame.display.set_mode((500, 650))
 clock = pygame.time.Clock()
 running = True
 
@@ -31,6 +31,8 @@ testlock.add_digit(5, (220, 300), (202,291), (258,368))
 testlock.add_digit(3, (300, 300), (280,290), (336,367))
 testlock.add_digit(6, (380, 300), (361,289), (417,366))
 
+bottom_text = Classes_and_functions.BottomText()
+
 #function to check if something is within a box (Like a mouse click)
 #takes in tuples for every input (coordinate pairs)
 def mouse_between(top_left, bottom_right):
@@ -51,6 +53,7 @@ while running:
                             digit.increment_code()
                 if mouse_between(testlock.top_left, testlock.bottom_right):
                     testlock.show_lock = not testlock.show_lock
+                    bottom_text.update_text("the lock out of this room")
 
     if testlock.check_code():
         test_unlocked = True
@@ -61,6 +64,7 @@ while running:
     #render game here
     screen.blit(pygame.image.load("images/inventory.png").convert(), (0,500))
     inventory.render_items()
+    bottom_text.render()
 
     if test_unlocked == True:
         screen.blit(testroom_unlocked, (0,0))

@@ -1,6 +1,6 @@
 import pygame
 pygame.init()
-screen = pygame.display.set_mode((500, 600))
+screen = pygame.display.set_mode((500, 650))
 font = pygame.font.SysFont("Arial", 48)
 #Classes and functions will be made here and imported into the pygame file to reduce clutter
 
@@ -75,3 +75,20 @@ class ClickableObject:
 
     def click(self):
         print(f'You clicked on {self.name}. {self.description}')
+
+class BottomText():
+    def __init__(self):
+        self.timer = 0
+        self.text = ''
+    def render(self):
+        if self.timer < 250:
+            self.timer += 1
+            if self.timer < 30:
+                screen.blit(font.render(str(self.text),True,(self.timer*8.5,self.timer*8.5,self.timer*8.5)), (0,600))
+            elif self.timer < 220:
+                screen.blit(font.render(str(self.text),True,(255,255,255)), (0,600))
+            else:
+                screen.blit(font.render(str(self.text),True,((250-self.timer)*8.5,(250-self.timer)*8.5,(250-self.timer)*8.5)), (0,600))
+    def update_text(self,text):
+        self.text = text
+        self.timer = 0
