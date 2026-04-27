@@ -60,20 +60,6 @@ room2_lock.add_digit(3, (300, 300), (280,290), (336,367), 6)
 room2_lock.add_digit(6, (380, 300), (361,289), (417,366), 6)
 room2.add_lock(room2_lock)
 
-##testroom = Classes_and_functions.Room()
-##
-##testdoor = Classes_and_functions.Door((400,65),(500,400))
-##testroom.add_door(testdoor)
-
-##testlock = Classes_and_functions.NumberLock('images/testlock.png', (460,255),(500,330))
-##testlock.add_digit(9, (130, 300), (116,292), (172,369))
-##testlock.add_digit(5, (220, 300), (202,291), (258,368))
-##testlock.add_digit(3, (300, 300), (280,290), (336,367))
-##testlock.add_digit(6, (380, 300), (361,289), (417,366))
-##testroom.add_object(testlock)
-##testroom.active = True
-##room_list.add_room(testroom)
-
 room_list.add_room(room1)
 room_list.add_room(room2)
 room_list.add_room(victory_room)
@@ -91,17 +77,6 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 room_list.click(event.pos)
-                ##if testlock.show_lock == True:
-                ##   for digit in testlock.digits:
-                ##        if mouse_between(digit.top_left, digit.bottom_right):
-                ##            digit.increment_code()
-                ##if mouse_between(testlock.top_left, testlock.bottom_right):
-                ##    testlock.show_lock = not testlock.show_lock
-                ##    bottom_text.update_text("the lock out of this room")
-
-    ##if testlock.check_code():
-        ##test_unlocked = True
-        ##testlock.show_lock = False
     
     screen.fill("black") #wipes previous screen
 
