@@ -33,12 +33,18 @@ class Room:
         self.name = name
         self.objects = []
         self.doors = []
+        self.locks = []
+        self.non_renders = []
         self.image = pygame.image.load(image).convert_alpha()
         self.active = False
     def add_object(self, obj):
         self.objects.append(obj)
     def add_door(self, door):
         self.doors.append(door)
+    def add_lock(self, lock):
+        self.locks.append(lock)
+    def add_nonrender(self, item):
+        self.non_renders.append(item)
     def activate(self):
         self.active = True
     def deactivate(self):
@@ -50,25 +56,48 @@ class Room:
                 obj.render()
             for door in self.doors:
                 door.render()
+            for lock in self.locks:
+                lock.render()
     def click(self, mouse_pos):
-        for object in self.objects:
-            if mouse_between(object.top_left, object.bottom_right, mouse_pos):
-                object.click()
-                
-        for door in self.doors:
-            if mouse_between(door.top_left, door.bottom_right, mouse_pos):
-                door.click()
-                
+        lock_active = False
+        for lock in self.locks:
+            if lock.show_lock:
+                lock_active = True
+        if lock_active:
+            for lock in self.locks:
+                if mouse_between(lock.top_left, lock.bottom_right, mouse_pos):
+                    lock.click()
+                    return
+                if lock.show_lock:
+                    lock.num_click(mouse_pos)
+                    return
+        else:
+            for object in self.objects:
+                if mouse_between(object.top_left, object.bottom_right, mouse_pos):
+                    object.click()
+                    return
+            for obj in self.non_renders:
+                if mouse_between(obj.top_left, obj.bottom_right, mouse_pos):
+                    obj.click()
+                    return
+            for lock in self.locks:
+                if mouse_between(lock.top_left, lock.bottom_right, mouse_pos):
+                    lock.click()
+                    return
+            for door in self.doors:
+                if mouse_between(door.top_left, door.bottom_right, mouse_pos):
+                    door.click()
+                    return    
 
 class Door:
-    def __init__(self, top_left, bottom_right, locked_image, unlocked_image, connected_room):
-        self.open = False
+    def __init__(self, top_left, bottom_right, locked_image, unlocked_image, connected_room, open = False):
+        self.open = open
         self.top_left = top_left
         self.bottom_right = bottom_right
         self.locked_image = pygame.image.load(locked_image).convert_alpha()
         self.unlocked_image = pygame.image.load(unlocked_image).convert_alpha()
         self.connected_room = connected_room
-    def open(self):
+    def open_door(self):
         self.open = True
     def render(self):
         if self.open:
@@ -82,7 +111,7 @@ class Door:
 
 class LockDigit:
 #class that contains everything a numberlock needs for a individual digit to be displayed on it
-    def __init__(self, location, top_left, bottom_right, max_num=9):
+    def __init__(self, location, top_left, bottom_right, max_num):
     #max_num is how high the number can go before looping back to zero, default 9
         self.top_left = top_left
         self.bottom_right = bottom_right
@@ -93,16 +122,19 @@ class LockDigit:
         self.cur_code = (self.cur_code + 1) % (self.max_num+1)
 
 class NumberLock:
-    def __init__(self, image, top_left, bottom_right):
+    def __init__(self, image, top_left, bottom_right, check_top_left, check_top_right, connected_door):
         self.answer = []
         self.digits = []
         self.top_left = top_left
         self.bottom_right = bottom_right
+        self.check_top_left = check_top_left
+        self.check_top_right = check_top_right
+        self.connected_door = connected_door
         self.image = image
         self.show_lock = False
-    def add_digit(self, answer, location, top_left, bottom_right):
+    def add_digit(self, answer, location, top_left, bottom_right, max_num=9):
         self.answer.append(answer)
-        self.digits.append(LockDigit(location, top_left, bottom_right))
+        self.digits.append(LockDigit(location, top_left, bottom_right, max_num))
     def render(self):
         if self.show_lock:
             screen.blit(pygame.image.load(self.image).convert_alpha(), (0,0))
@@ -111,11 +143,33 @@ class NumberLock:
     def check_code(self):
         for index, answer in enumerate(self.answer):
             if answer == self.digits[index].cur_code:
-                correct = True
+                self.connected_door.open_door()
+                self.show_lock = False
+    def click(self):
+        if self.connected_door.open:
+            self.connected_door.click()
+        else:
+            if self.show_lock:
+                self.show_lock = False
             else:
-                correct = False
-                break
-        return correct
+                self.show_lock = True
+    def num_click(self, mouse_pos):
+        if mouse_between(self.check_top_left, self.check_top_right, mouse_pos):
+            self.check_code()
+        for digit in self.digits:
+            if mouse_between(digit.top_left, digit.bottom_right, mouse_pos):
+                digit.increment_code()
+
+class ItemLock:
+    def __init__(self, item, top_left, bottom_right, door):
+        self.item = item
+        self.top_left = top_left
+        self.bottom_right = bottom_right
+        self.door = door
+    def click(self):
+        if self.item in inventory.items:
+            self.door.open_door()
+            inventory.remove_item(self.item)
 
 class Item:
     def __init__(self, image, name):
@@ -128,6 +182,10 @@ class Inventory:
     def add_item(self, item):
         self.items.append(item)
         print(f"added {item.name}")
+    def remove_item(self, remitem):
+        for item in self.items:
+            if item.name == remitem.name:
+                self.items.remove(item)
     def render_items(self):
         for index, item in enumerate(self.items):
             screen.blit(pygame.image.load(item.image).convert_alpha(), (25+index*75,525))
@@ -156,24 +214,37 @@ class ClickableObject:
         self.bottom_right = bottom_right
 
     def click(self):
-        print(f'You clicked on {self.name}. {self.description}')
+        bottom_text.update_text(f'You clicked on {self.name}. {self.description}')
 
 class BottomText():
     def __init__(self):
         self.timer = 0
         self.text = ''
+        self.font_size = 48
+        self.text_font = pygame.font.SysFont("Arial", self.font_size)
     def render(self):
+        
         if self.timer < 250:
             self.timer += 1
             if self.timer < 30:
-                screen.blit(font.render(str(self.text),True,(self.timer*8.5,self.timer*8.5,self.timer*8.5)), (0,600))
+                screen.blit(self.text_font.render(str(self.text),True,(self.timer*8.5,self.timer*8.5,self.timer*8.5)), (0,600))
             elif self.timer < 220:
-                screen.blit(font.render(str(self.text),True,(255,255,255)), (0,600))
+                screen.blit(self.text_font.render(str(self.text),True,(255,255,255)), (0,600))
             else:
-                screen.blit(font.render(str(self.text),True,((250-self.timer)*8.5,(250-self.timer)*8.5,(250-self.timer)*8.5)), (0,600))
+                screen.blit(self.text_font.render(str(self.text),True,((250-self.timer)*8.5,(250-self.timer)*8.5,(250-self.timer)*8.5)), (0,600))
     def update_text(self,text):
         self.text = text
+        if len(text) < 20:
+            self.font_size = 48
+        elif len(text) < 30:
+            self.font_size = 36
+        elif len(text) < 40:
+            self.font_size = 24
+        else:
+            self.font_size = 12
+        self.text_font = pygame.font.SysFont("Arial", self.font_size)
         self.timer = 0
 
 inventory = Inventory()
 room_list = RoomContainer()
+bottom_text = BottomText()

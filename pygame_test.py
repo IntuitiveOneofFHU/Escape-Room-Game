@@ -7,7 +7,7 @@ import pygame
 import Classes_and_functions
 from Classes_and_functions import room_list
 from Classes_and_functions import inventory
-
+from Classes_and_functions import bottom_text
 
 
 pygame.init()
@@ -24,32 +24,60 @@ test_unlocked = False #makes the door start locked
 
 
 
-bottom_text = Classes_and_functions.BottomText()
 
+
+victory_room = Classes_and_functions.Room('victory','images/victory.png')
 room1 = Classes_and_functions.Room('room1','images/room1/room1.png')
-room1_door1 = Classes_and_functions.Door((231,218),(341,382),"images/room1/door1.png","images/room1/door1_open.png", 0)
-room1_door2 = Classes_and_functions.Door((0,216),(84,463),"images/room1/door2.png","images/room1/door2_open.png", 0)
+room2 = Classes_and_functions.Room('room2','images/room2/room2.png')
+
+room1_door1 = Classes_and_functions.Door((231,218),(341,382),"images/room1/door1.png","images/room1/door1_open.png", victory_room)
+room1_door2 = Classes_and_functions.Door((0,216),(84,463),"images/room1/door2.png","images/room1/door2_open.png", room2)
 basic_key = Classes_and_functions.Item('images/key.png','key')
 room1_key = Classes_and_functions.ClickableItem(basic_key,(120,337),(138,358), 'images/room1/key.png')
+room1_door2_keylock = Classes_and_functions.ItemLock(basic_key, (22,350), (32,360), room1_door2)
 room1.add_door(room1_door1)
 room1.add_door(room1_door2)
 room1.add_object(room1_key)
+room1.add_nonrender(room1_door2_keylock)
+
+room2_door1 = Classes_and_functions.Door((399,160),(500,411),'images/room2/door1.png','images/room2/door1_open.png', room1, True)
+room2_door2 = Classes_and_functions.Door((0,203),(120,474),'images/room2/door2.png','images/room2/door2_open.png', 0)
+green_die = Classes_and_functions.ClickableObject('a green die', 'It reads 6', (188,342),(195,355))
+red_die = Classes_and_functions.ClickableObject('a red die', 'it reads 3', (270,347),(280,356))
+brown_die = Classes_and_functions.ClickableObject('a brown die', 'it reads 5',(315,328),(328,340))
+yellow_die = Classes_and_functions.ClickableObject('a yellow die', 'it reads 1',(228,361),(240,370))
+room2.add_door(room2_door1)
+room2.add_door(room2_door2)
+room2.add_nonrender(green_die)
+room2.add_nonrender(red_die)
+room2.add_nonrender(brown_die)
+room2.add_nonrender(yellow_die)
+
+room2_lock = Classes_and_functions.NumberLock('images/room2/lock.png', (72,332), (110,378), (269,148), (387,197), room2_door2)
+room2_lock.add_digit(1, (130, 300), (116,292), (172,369), 6)
+room2_lock.add_digit(5, (220, 300), (202,291), (258,368), 6)
+room2_lock.add_digit(3, (300, 300), (280,290), (336,367), 6)
+room2_lock.add_digit(6, (380, 300), (361,289), (417,366), 6)
+room2.add_lock(room2_lock)
 
 ##testroom = Classes_and_functions.Room()
 ##
 ##testdoor = Classes_and_functions.Door((400,65),(500,400))
 ##testroom.add_door(testdoor)
 
-testlock = Classes_and_functions.NumberLock('images/testlock.png', (460,255),(500,330))
-testlock.add_digit(9, (130, 300), (116,292), (172,369))
-testlock.add_digit(5, (220, 300), (202,291), (258,368))
-testlock.add_digit(3, (300, 300), (280,290), (336,367))
-testlock.add_digit(6, (380, 300), (361,289), (417,366))
+##testlock = Classes_and_functions.NumberLock('images/testlock.png', (460,255),(500,330))
+##testlock.add_digit(9, (130, 300), (116,292), (172,369))
+##testlock.add_digit(5, (220, 300), (202,291), (258,368))
+##testlock.add_digit(3, (300, 300), (280,290), (336,367))
+##testlock.add_digit(6, (380, 300), (361,289), (417,366))
 ##testroom.add_object(testlock)
 ##testroom.active = True
 ##room_list.add_room(testroom)
 
 room_list.add_room(room1)
+room_list.add_room(room2)
+room_list.add_room(victory_room)
+
 room_list.change_room(room1)
 
 
@@ -71,9 +99,9 @@ while running:
                 ##    testlock.show_lock = not testlock.show_lock
                 ##    bottom_text.update_text("the lock out of this room")
 
-    if testlock.check_code():
-        test_unlocked = True
-        testlock.show_lock = False
+    ##if testlock.check_code():
+        ##test_unlocked = True
+        ##testlock.show_lock = False
     
     screen.fill("black") #wipes previous screen
 
