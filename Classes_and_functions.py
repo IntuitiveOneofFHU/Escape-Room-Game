@@ -27,6 +27,7 @@ class RoomContainer:
         for room in self.rooms:
             if room.active:
                 room.click(mouse_pos)
+                return
 
 class Room:
     def __init__(self, name, image):
@@ -90,12 +91,15 @@ class Room:
                     return    
 
 class Door:
-    def __init__(self, top_left, bottom_right, locked_image, unlocked_image, connected_room, open = False):
+    def __init__(self, top_left, locked_image, unlocked_image, connected_room, open = False):
         self.open = open
         self.top_left = top_left
-        self.bottom_right = bottom_right
+
+        
+        #self.bottom_right = bottom_right
         self.locked_image = pygame.image.load(locked_image).convert_alpha()
         self.unlocked_image = pygame.image.load(unlocked_image).convert_alpha()
+        self.bottom_right = tuple(x + y for x, y in zip(self.top_left, self.unlocked_image.get_size()))
         self.connected_room = connected_room
     def open_door(self):
         self.open = True
@@ -191,12 +195,12 @@ class Inventory:
             screen.blit(pygame.image.load(item.image).convert_alpha(), (25+index*75,525))
 
 class ClickableItem:
-    def __init__(self, item, top_left, bottom_right, image, visible=True):
+    def __init__(self, item, top_left,image, visible=True):
         self.item = item
         self.image = pygame.image.load(image).convert_alpha()
         self.visible = visible
         self.top_left = top_left
-        self.bottom_right = bottom_right
+        self.bottom_right = tuple(x + y for x, y in zip(self.top_left, self.image.get_size()))
     def render(self):
         if self.visible:
             screen.blit(self.image, self.top_left)

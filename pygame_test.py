@@ -15,33 +15,24 @@ screen = pygame.display.set_mode((500, 650))
 clock = pygame.time.Clock()
 running = True
 
-testroom_locked = pygame.image.load('images/testroom_locked.png').convert()
-testroom_unlocked = pygame.image.load('images/testroom_unlocked.png').convert()
-
 font = pygame.font.SysFont("Arial", 48)
-
-test_unlocked = False #makes the door start locked
-
-
-
-
 
 victory_room = Classes_and_functions.Room('victory','images/victory.png')
 room1 = Classes_and_functions.Room('room1','images/room1/room1.png')
 room2 = Classes_and_functions.Room('room2','images/room2/room2.png')
 
-room1_door1 = Classes_and_functions.Door((231,218),(341,382),"images/room1/door1.png","images/room1/door1_open.png", victory_room)
-room1_door2 = Classes_and_functions.Door((0,216),(84,463),"images/room1/door2.png","images/room1/door2_open.png", room2)
+room1_door1 = Classes_and_functions.Door((231,218),"images/room1/door1.png","images/room1/door1_open.png", victory_room)
+room1_door2 = Classes_and_functions.Door((0,216),"images/room1/door2.png","images/room1/door2_open.png", room2)
 basic_key = Classes_and_functions.Item('images/key.png','key')
-room1_key = Classes_and_functions.ClickableItem(basic_key,(120,337),(138,358), 'images/room1/key.png')
+room1_key = Classes_and_functions.ClickableItem(basic_key,(120,337),'images/room1/key.png')
 room1_door2_keylock = Classes_and_functions.ItemLock(basic_key, (22,350), (32,360), room1_door2)
 room1.add_door(room1_door1)
 room1.add_door(room1_door2)
 room1.add_object(room1_key)
 room1.add_nonrender(room1_door2_keylock)
 
-room2_door1 = Classes_and_functions.Door((399,160),(500,411),'images/room2/door1.png','images/room2/door1_open.png', room1, True)
-room2_door2 = Classes_and_functions.Door((0,203),(120,474),'images/room2/door2.png','images/room2/door2_open.png', 0)
+room2_door1 = Classes_and_functions.Door((399,160),'images/room2/door1.png','images/room2/door1_open.png', room1, True)
+room2_door2 = Classes_and_functions.Door((0,203),'images/room2/door2.png','images/room2/door2_open.png', 0)
 green_die = Classes_and_functions.ClickableObject('a green die', 'It reads 6', (188,342),(195,355))
 red_die = Classes_and_functions.ClickableObject('a red die', 'it reads 3', (270,347),(280,356))
 brown_die = Classes_and_functions.ClickableObject('a brown die', 'it reads 5',(315,328),(328,340))
