@@ -68,7 +68,9 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 room_list.click(event.pos)
-    
+
+    mouse_position = pygame.mouse.get_pos()
+
     screen.fill("black") #wipes previous screen
 
     #render game here
@@ -78,10 +80,9 @@ while running:
 
     room_list.render()
 
-
+    room_list.cursor_render(mouse_position)
 
     #----Displays Mouse Position----
-    ##mouse_position = pygame.mouse.get_pos()
     ##MOUSE_POS_DEBUG = font.render(str(mouse_position), True, (0, 0, 0))
     ##screen.blit(MOUSE_POS_DEBUG, (0,0))
     #---Comment Out When Unneeded---

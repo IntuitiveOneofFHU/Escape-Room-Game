@@ -28,6 +28,11 @@ class RoomContainer:
             if room.active:
                 room.click(mouse_pos)
                 return
+    def cursor_render(self, mouse_pos):
+        for room in self.rooms:
+            if room.active:
+                room.cursor_render(mouse_pos)
+                return
 
 class Room:
     def __init__(self, name, image):
@@ -88,7 +93,39 @@ class Room:
             for door in self.doors:
                 if mouse_between(door.top_left, door.bottom_right, mouse_pos):
                     door.click()
-                    return    
+                    return
+    def cursor_render(self, mouse_pos):
+        lock_active = False
+        for lock in self.locks:
+            if lock.show_lock:
+                lock_active = True
+        if lock_active:
+            for lock in self.locks:
+                if mouse_between(lock.top_left, lock.bottom_right, mouse_pos):
+                    pygame.mouse.set_cursor(pygame.cursors.diamond)
+                    return
+                if lock.show_lock:
+                    lock.cursor_render(mouse_pos)
+                    return
+        else:
+            for object in self.objects:
+                if mouse_between(object.top_left, object.bottom_right, mouse_pos) and object.visible:
+                    pygame.mouse.set_cursor(pygame.cursors.broken_x)
+                    return
+            for obj in self.non_renders:
+                if mouse_between(obj.top_left, obj.bottom_right, mouse_pos):
+                    pygame.mouse.set_cursor(pygame.cursors.broken_x)
+                    return
+            for lock in self.locks:
+                if mouse_between(lock.top_left, lock.bottom_right, mouse_pos):
+                    pygame.mouse.set_cursor(pygame.cursors.diamond)
+                    return
+            for door in self.doors:
+                if mouse_between(door.top_left, door.bottom_right, mouse_pos):
+                    pygame.mouse.set_cursor(pygame.cursors.tri_left)
+                    return
+        pygame.mouse.set_cursor(pygame.cursors.arrow)
+            
 
 class Door:
     def __init__(self, top_left, locked_image, unlocked_image, connected_room, open = False):
@@ -160,9 +197,19 @@ class NumberLock:
     def num_click(self, mouse_pos):
         if mouse_between(self.check_top_left, self.check_top_right, mouse_pos):
             self.check_code()
+            return
         for digit in self.digits:
             if mouse_between(digit.top_left, digit.bottom_right, mouse_pos):
                 digit.increment_code()
+                return
+    def cursor_render(self, mouse_pos):
+        if mouse_between(self.check_top_left, self.check_top_right, mouse_pos):
+            pygame.mouse.set_cursor(pygame.cursors.tri_right)
+            return
+        for digit in self.digits:
+            if mouse_between(digit.top_left, digit.bottom_right, mouse_pos):
+                pygame.mouse.set_cursor(pygame.cursors.broken_x)
+                return
 
 class ItemLock:
     def __init__(self, item, top_left, bottom_right, door):
@@ -185,7 +232,6 @@ class Inventory:
         self.items = []
     def add_item(self, item):
         self.items.append(item)
-        print(f"added {item.name}")
     def remove_item(self, remitem):
         for item in self.items:
             if item.name == remitem.name:
