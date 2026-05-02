@@ -53,6 +53,7 @@ room2.add_lock(room2_lock)
 
 room_list.add_room(room1)
 room_list.add_room(room2)
+room_list.add_room(room3)
 room_list.add_room(victory_room)
 
 room_list.change_room(room1)
